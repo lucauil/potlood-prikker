@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class hoofdmenu : MonoBehaviour
+public class HoofdMenu : MonoBehaviour
 {
     public GameObject Optiemenu;
     // Start is called before the first frame update
