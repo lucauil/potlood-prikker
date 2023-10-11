@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Player_Movement : MonoBehaviour
 {
@@ -9,6 +10,9 @@ public class Player_Movement : MonoBehaviour
     Rigidbody2D rb;
     public bool isJumping;
     BoxCollider2D Box;
+    public GameObject Enemy;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -28,24 +32,29 @@ public class Player_Movement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, jumpforce);
         }
     }
-    private void OnCollisionEnter(Collision collision)
-    {/*
-        if (collision.transform.tag=="Ground")
-        {*/
-            Debug.Log("You are in the air");
-            isJumping = false;
-           
-        /*}*/
-            
-    }
-    private void OnCollisionExit(Collision collision)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        /*if (collision.transform.tag == "Ground")
-        {*/
+        if (other.transform.tag=="Ground")
+        {
             Debug.Log("You are touching the ground");
-            isJumping = true;
-       
-        /*}*/
+            isJumping = false;
+        }
+
+        if(isJumping == true) 
+        {
+            if (other.transform.tag == "Enemy")
+            {
+                Debug.Log("You killed the enemy");
+                Enemy.SetActive(false);
+            }
+        }
     }
-    
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.transform.tag == "Ground")
+        {
+            Debug.Log("You are in the air");
+            isJumping = true;
+        }
+    }
 }
