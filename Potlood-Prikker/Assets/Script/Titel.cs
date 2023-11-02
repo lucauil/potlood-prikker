@@ -4,49 +4,35 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public enum alphaValue
-{
-    SHRINKING,
-    GROWING
-}
 
 public class Titel : MonoBehaviour
 {
-    public alphaValue currentAlpaValue;
-    public float CommentMinAlpha;
-    public float CommentMaxAlpha;
-    public float CommentCurrentAlpha;
-
     public GameObject Text;
     private float timer;
-
-    void Start()
-    {
-      
-    }
-
+    public float SPEEED;
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        }
         BlinkingText();
-        timer += Time.deltaTime;
+        timer += Time.deltaTime * SPEEED;
         Debug.Log(timer);
+
+        if (Input.GetKeyUp(KeyCode.KeypadEnter))
+        {
+            SceneManager.LoadScene("HoofdMenu");
+        }
     }
 
     
         
     public void BlinkingText()
     {
-        if(timer <= 0.5f)
+        if (timer < 0.5f)
         {
             Text.SetActive(false);
         }
 
-        if(timer >= 0.5f)
+        if(timer > 0.5f)
         {
             Text.SetActive(true);
             

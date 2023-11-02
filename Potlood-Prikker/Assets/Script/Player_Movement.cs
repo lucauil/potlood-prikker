@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
@@ -9,10 +10,11 @@ using UnityEngine.UI;
 
 public class Player_Movement : MonoBehaviour
 {
+    // Movement
     public float jumpforce;
     Rigidbody2D rb;
     public bool isJumping;
-
+    public int Speed;
     public GameObject RespawnPoint;
 
     public GameObject Enemy;
@@ -24,6 +26,9 @@ public class Player_Movement : MonoBehaviour
     public Slider Slider_Health;
 
     public GameObject Finish;
+    public GameObject Verloren;
+    public GameObject Pauze;
+    private bool Pauze_ON;
 
     public SpriteRenderer Player_Image;
     public int health;
@@ -38,6 +43,7 @@ public class Player_Movement : MonoBehaviour
         Finish.SetActive(false);
         Time.timeScale = 1f;
         Hurt = false;
+        Pauze_ON = false;
     }
 
     // Update is called once per frame
@@ -46,6 +52,11 @@ public class Player_Movement : MonoBehaviour
         float directionX = Input.GetAxis("Horizontal");
         Slider_Main.value= timer;
         Slider_Health.value = health;
+        Pauze_Menu();
+        Dood();
+        Flickering();
+        Cursor.visible = true;
+         
         if (timer < 5)
         {
             rb.velocity = new Vector2(directionX * 7f, rb.velocity.y);
@@ -81,14 +92,12 @@ public class Player_Movement : MonoBehaviour
                 timer = 5;
             }
         }
+
         if(directionX == 0)
         {
             animator.SetBool("Moving", false);
         }
-        if (Hurt == false)
-        {
-            Flashhurt = 0;
-        }
+        
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -120,45 +129,115 @@ public class Player_Movement : MonoBehaviour
             Finish.SetActive(true);
         }
 
+        if (other.transform.tag == "Enemy")
+        {
+            Hurt = true;
+            if (Hurt == true)
+            {
+                health -= 10;
+            }
+            
+        }
     }
     private void OnTriggerExit2D(Collider2D other)
     {
-        
         if (other.transform.tag == "Ground")
         {
             Debug.Log("You are in the air");
             isJumping = true;
         }
-        Hurt = false;
     }
-    private void OnTriggerStay2D(Collider2D other)
+    private void Flickering()
     {
-        if (other.transform.tag == "Enemy")
+        if (Hurt == true)
         {
-            if (Hurt == false)
+            Flashhurt += Time.deltaTime*Speed;
+            
+            if (Flashhurt < 1)
             {
-                health--;
+                    Player_Image.enabled = true;
             }
 
-            Hurt = true;
-            if (Hurt == true)
+            if (Flashhurt >= 1)
             {
-                Flashhurt += Time.deltaTime;
-
-                if (Flashhurt <= 0.5)
-                {
-                    Player_Image.enabled = true;
-                }
-                if (Flashhurt > 0.5)
+                if(Flashhurt < 2)
                 {
                     Player_Image.enabled = false;
                 }
-                if (Flashhurt >= 1)
+            }
+            if (Flashhurt >= 2)
+            {
+                if (Flashhurt < 3)
                 {
-                    Flashhurt = 0;
+                    Player_Image.enabled = true;
                 }
             }
+            if (Flashhurt >= 3)
+            {
+                if (Flashhurt < 4)
+                {
+                    Player_Image.enabled = false;
+                }
+                
+            }
+            if (Flashhurt >= 4)
+            {
+                if (Flashhurt < 5)
+                {
+                    Player_Image.enabled = true;
+                }
 
+            }
+            if (Flashhurt >= 5)
+            {
+                if (Flashhurt < 6)
+                {
+                    Player_Image.enabled = false;
+                }
+
+            }
+            if (Flashhurt >= 6)
+            {
+                Player_Image.enabled = true;
+                Flashhurt = 0;
+                Hurt = false;
+            }
+        }
+    }
+    public void Dood()
+    {
+        if(health <= 0)
+        {
+            Debug.Log("You died");
+            Time.timeScale = 0f;
+            Verloren.SetActive(true);
+        }
+    }
+    public void Pauze_Menu()
+    {
+        if(health > 0)
+        {
+            if (Pauze_ON == false)
+            {
+                Time.timeScale = 1f;
+                Pauze.SetActive(false);
+
+                if (Input.GetKey(KeyCode.Escape))
+                {
+                    Pauze_ON = true;
+                }
+            }
+            if (Pauze_ON == true)
+            {
+                Debug.Log("Pauze");
+                Time.timeScale = 0f;
+                Pauze.SetActive(true);
+
+                if (Input.GetKey(KeyCode.Escape))
+                {
+                    Pauze_ON = false;
+                }
+            }
         }
     }
 }
