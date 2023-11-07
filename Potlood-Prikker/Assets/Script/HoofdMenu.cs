@@ -16,7 +16,7 @@ public class HoofdMenu : MonoBehaviour
 
     public void PlayGame()
     {
-        SceneManager.LoadScene("Level_1");
+        SceneManager.LoadScene("Kleur_Selectie");
     }
 
     public void CreditsGame()
