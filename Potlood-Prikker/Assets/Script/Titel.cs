@@ -16,8 +16,8 @@ public class Titel : MonoBehaviour
         BlinkingText();
         timer += Time.deltaTime * SPEEED;
         Debug.Log(timer);
-
-        if (Input.GetKeyUp(KeyCode.KeypadEnter))
+        float Enter = Input.GetAxis("Submit");
+        if (Enter == 1 )
         {
             SceneManager.LoadScene("HoofdMenu");
         }

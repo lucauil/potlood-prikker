@@ -6,6 +6,8 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
+using UnityEngine.Audio;
+using NUnit.Framework;
 
 
 public class Player_Movement : MonoBehaviour
@@ -16,15 +18,20 @@ public class Player_Movement : MonoBehaviour
     public bool isJumping;
     public int Speed;
     public GameObject RespawnPoint;
+    private AudioSource Hurtsound;
+    public float FallingThreshold = -0.01f;
 
+    public bool Falling;
+    private bool gewonnen;
     public GameObject Enemy;
     private Animator animator;
 
-    private float timer;
-
+    public float timer;
+    public float lastY;
     public Slider Slider_Main;
     public Slider Slider_Health;
 
+    
     public GameObject Finish;
     public GameObject Verloren;
     public GameObject Pauze;
@@ -44,25 +51,31 @@ public class Player_Movement : MonoBehaviour
         Time.timeScale = 1f;
         Hurt = false;
         Pauze_ON = false;
+        gewonnen =  false;
+        Hurtsound = GetComponent<AudioSource>();
+        lastY = transform.position.y;
     }
 
     // Update is called once per frame
     void Update()
     {
-        float directionX = Input.GetAxis("Horizontal");
+        
         Slider_Main.value= timer;
         Slider_Health.value = health;
+        
         Pauze_Menu();
         Dood();
         Flickering();
+        Win_Scherm();
         Cursor.visible = true;
-         
+        Debug.Log(rb.velocity.y);
+        float distancePerSecondSinceLastFrame = (rb.velocity.y - lastY) * Time.deltaTime;
+        lastY = rb.position.y;  //set for next frame
+
+        float directionX = Input.GetAxis("Horizontal");
         if (timer < 5)
         {
-            rb.velocity = new Vector2(directionX * 7f, rb.velocity.y);
-
-            Debug.Log(Flashhurt);
-
+            rb.velocity = new Vector2( directionX * 7f, rb.velocity.y);
             if (directionX < 0)
             {
                 animator.SetBool("Moving", true);
@@ -82,8 +95,9 @@ public class Player_Movement : MonoBehaviour
         }
         if (timer >= 5)
         {
-            if(Input.GetKeyDown(KeyCode.P)) 
-            { 
+            rb.velocity = new Vector2(directionX = 0, rb.velocity.y);
+            if (Input.GetKeyDown(KeyCode.P))
+            {
                 Debug.Log("Je kan weer bewegen");
                 timer = 0;
             }
@@ -92,10 +106,20 @@ public class Player_Movement : MonoBehaviour
                 timer = 5;
             }
         }
-
         if(directionX == 0)
         {
             animator.SetBool("Moving", false);
+        }
+
+        //Falling
+        if(distancePerSecondSinceLastFrame < FallingThreshold)
+        {
+            Falling = true;
+
+        }
+        else
+        {
+            Falling = false;  
         }
         
     }
@@ -112,21 +136,28 @@ public class Player_Movement : MonoBehaviour
             Debug.Log("You are Dead");
             transform.position = RespawnPoint.transform.position;
             health -= 50;
+            Hurtsound.Play();
         }
 
         if (isJumping == true) 
         {
             if (other.transform.tag == "Enemy_Hitbox")
             {
-                Debug.Log("You killed the enemy");
-                Enemy.SetActive(false);
+                if(Falling) 
+                {
+                    Debug.Log("You killed the enemy");
+                    rb.velocity = new Vector2(rb.velocity.x, 0f);
+                    rb.AddForce(Vector2.up * 300f);
+                    GameObject.FindGameObjectWithTag("Enemy").SetActive(false);
+                    Hurtsound.Play();
+                }
             }
         }
         if (other.transform.tag == "Finish_Cube")
         {
-            Debug.Log("You Cleared the level");
-            Time.timeScale = 0f;
-            Finish.SetActive(true);
+            
+            gewonnen = true;
+            
         }
 
         if (other.transform.tag == "Enemy")
@@ -135,6 +166,7 @@ public class Player_Movement : MonoBehaviour
             if (Hurt == true)
             {
                 health -= 10;
+                Hurtsound.Play();
             }
             
         }
@@ -146,6 +178,7 @@ public class Player_Movement : MonoBehaviour
             Debug.Log("You are in the air");
             isJumping = true;
         }
+
     }
     private void Flickering()
     {
@@ -201,6 +234,7 @@ public class Player_Movement : MonoBehaviour
                 Player_Image.enabled = true;
                 Flashhurt = 0;
                 Hurt = false;
+                
             }
         }
     }
@@ -217,14 +251,17 @@ public class Player_Movement : MonoBehaviour
     {
         if(health > 0)
         {
-            if (Pauze_ON == false)
+            if (gewonnen == false)
             {
-                Time.timeScale = 1f;
-                Pauze.SetActive(false);
-
-                if (Input.GetKey(KeyCode.Escape))
+                if (Pauze_ON == false)
                 {
-                    Pauze_ON = true;
+                    Time.timeScale = 1f;
+                    Pauze.SetActive(false);
+
+                    if (Input.GetKey(KeyCode.Escape))
+                    {
+                        Pauze_ON = true;
+                    }
                 }
             }
             if (Pauze_ON == true)
@@ -238,6 +275,15 @@ public class Player_Movement : MonoBehaviour
                     Pauze_ON = false;
                 }
             }
+        }
+    }
+    public void Win_Scherm()
+    {
+        if (gewonnen == true)
+        {
+            Finish.SetActive(true);
+            Debug.Log("You Won");
+            Time.timeScale = 0f;
         }
     }
 }
