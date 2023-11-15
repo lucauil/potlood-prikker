@@ -176,7 +176,6 @@ public class Player_Movement : MonoBehaviour
                     Hurtsound.Play();
                 }
             }
-           
         }
     }
     private void OnTriggerExit2D(Collider2D other)
