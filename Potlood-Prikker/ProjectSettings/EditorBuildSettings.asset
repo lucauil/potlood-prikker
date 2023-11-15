@@ -6,16 +6,16 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Titel_Scherm.unity
+    path: Assets/Assets/Scenes/Titel_Scherm.unity
     guid: 1361ec79770cb2a4b99e45028acaefb4
   - enabled: 1
-    path: Assets/Scenes/HoofdMenu.unity
-    guid: bb38a61223e572048b6471098282bf84
-  - enabled: 1
-    path: Assets/Scenes/Kleur_Selectie.unity
+    path: Assets/Assets/Scenes/Kleur_Selectie.unity
     guid: 0fb150ffc50942c45aeea96e6ed0c9c5
   - enabled: 1
-    path: Assets/Scenes/Level_1.unity
+    path: Assets/Assets/Scenes/Level_1.unity
     guid: 15a7a628be067e04e9e76acfc9d3f9af
+  - enabled: 1
+    path: Assets/Assets/Scenes/Level_2.unity
+    guid: bd74309c7f43e0e4bab92bfd5d84d9c2
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

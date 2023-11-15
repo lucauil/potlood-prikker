@@ -6,41 +6,44 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine.Audio;
 using NUnit.Framework;
+using NUnit;
 
 
 public class Player_Movement : MonoBehaviour
 {
     // Movement
-    public float jumpforce;
+    private float jumpforce = 14f;
     Rigidbody2D rb;
-    public bool isJumping;
-    public int Speed;
+    private bool isJumping;
+    private int Speed = 5;
     public GameObject RespawnPoint;
     private AudioSource Hurtsound;
-    public float FallingThreshold = -0.01f;
-
-    public bool Falling;
+    private float FallingThreshold = -0.01f;
+    public GameObject TEXT;
+    private bool Falling;
     private bool gewonnen;
     public GameObject Enemy;
     private Animator animator;
 
-    public float timer;
-    public float lastY;
+    private float timer;
+    private float lastY;
     public Slider Slider_Main;
     public Slider Slider_Health;
 
-    
     public GameObject Finish;
     public GameObject Verloren;
     public GameObject Pauze;
     private bool Pauze_ON;
 
     public SpriteRenderer Player_Image;
-    public int health;
-    public bool Hurt;
-    public float Flashhurt;
+    private int health = 100;
+    private bool Hurt;
+    private float Flashhurt;
+
+    public static bool jumped_On_head;
     // Start is called before the first frame update
     void Start()
     {
@@ -54,6 +57,8 @@ public class Player_Movement : MonoBehaviour
         gewonnen =  false;
         Hurtsound = GetComponent<AudioSource>();
         lastY = transform.position.y;
+        Hurtsound.Stop();
+        TEXT.SetActive(false);
     }
 
     // Update is called once per frame
@@ -68,13 +73,14 @@ public class Player_Movement : MonoBehaviour
         Flickering();
         Win_Scherm();
         Cursor.visible = true;
-        Debug.Log(rb.velocity.y);
+/*      Debug.Log(rb.velocity.y);*/
         float distancePerSecondSinceLastFrame = (rb.velocity.y - lastY) * Time.deltaTime;
         lastY = rb.position.y;  //set for next frame
 
         float directionX = Input.GetAxis("Horizontal");
         if (timer < 5)
         {
+            TEXT.SetActive(false);
             rb.velocity = new Vector2( directionX * 7f, rb.velocity.y);
             if (directionX < 0)
             {
@@ -95,6 +101,7 @@ public class Player_Movement : MonoBehaviour
         }
         if (timer >= 5)
         {
+            TEXT.SetActive(true);
             rb.velocity = new Vector2(directionX = 0, rb.velocity.y);
             if (Input.GetKeyDown(KeyCode.P))
             {
@@ -123,17 +130,17 @@ public class Player_Movement : MonoBehaviour
         }
         
     }
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (other.transform.tag=="Ground")
+        if (collision.transform.tag=="Ground")
         {
-            Debug.Log("You are touching the ground");
+/*            Debug.Log("You are touching the ground");*/
             isJumping = false;
         }
 
-        if (other.transform.tag == "Spikes")
+        if (collision.transform.tag == "Spikes")
         {
-            Debug.Log("You are Dead");
+/*            Debug.Log("You are Dead");*/
             transform.position = RespawnPoint.transform.position;
             health -= 50;
             Hurtsound.Play();
@@ -141,41 +148,42 @@ public class Player_Movement : MonoBehaviour
 
         if (isJumping == true) 
         {
-            if (other.transform.tag == "Enemy_Hitbox")
+            if (collision.gameObject.CompareTag("Enemy"))
             {
-                if(Falling) 
+                if(Falling)
                 {
+                    collision.gameObject.SetActive(false);
                     Debug.Log("You killed the enemy");
                     rb.velocity = new Vector2(rb.velocity.x, 0f);
                     rb.AddForce(Vector2.up * 300f);
-                    GameObject.FindGameObjectWithTag("Enemy").SetActive(false);
                     Hurtsound.Play();
                 }
             }
         }
-        if (other.transform.tag == "Finish_Cube")
+        if (collision.transform.tag == "Finish_Cube")
         {
-            
             gewonnen = true;
-            
         }
 
-        if (other.transform.tag == "Enemy")
+        if (collision.transform.tag == "Enemy")
         {
-            Hurt = true;
-            if (Hurt == true)
+            if(!Falling) 
             {
-                health -= 10;
-                Hurtsound.Play();
+                Hurt = true;
+                if (Hurt == true)
+                {
+                    health -= 10;
+                    Hurtsound.Play();
+                }
             }
-            
+           
         }
     }
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.transform.tag == "Ground")
         {
-            Debug.Log("You are in the air");
+/*            Debug.Log("You are in the air");*/
             isJumping = true;
         }
 
@@ -238,11 +246,20 @@ public class Player_Movement : MonoBehaviour
             }
         }
     }
+
+    public void Enemy_Dood()
+    {
+     /*   Enemy.SetActive(false);*/
+        Debug.Log("You killed the enemy");
+        rb.velocity = new Vector2(rb.velocity.x, 0f);
+        rb.AddForce(Vector2.up * 300f);
+        Hurtsound.Play();
+    }
     public void Dood()
     {
         if(health <= 0)
         {
-            Debug.Log("You died");
+/*            Debug.Log("You died");*/
             Time.timeScale = 0f;
             Verloren.SetActive(true);
         }
@@ -264,17 +281,18 @@ public class Player_Movement : MonoBehaviour
                     }
                 }
             }
-            if (Pauze_ON == true)
-            {
-                Debug.Log("Pauze");
-                Time.timeScale = 0f;
-                Pauze.SetActive(true);
-
-                if (Input.GetKey(KeyCode.Escape))
+                if (Pauze_ON == true)
                 {
-                    Pauze_ON = false;
+                    Debug.Log("Pauze");
+                    Time.timeScale = 0f;
+                    Pauze.SetActive(true);
+
+
+                    if (Input.GetKey(KeyCode.Escape))
+                    {
+                        Pauze_ON = false;
+                    }
                 }
-            }
         }
     }
     public void Win_Scherm()

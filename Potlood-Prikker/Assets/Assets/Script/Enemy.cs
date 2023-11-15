@@ -25,6 +25,10 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Animator Animation;
 
 
+    void Start()
+    {
+
+    }
     private void Awake()
     {
         initscale = enemy.localScale;
@@ -52,13 +56,14 @@ public class Enemy : MonoBehaviour
             else
             {
                 DirectionChange();
+                
             }
         }
-      
     }
-
-    private void DirectionChange()
-    {
+  
+    private void DirectionChange() 
+    { 
+   
         Animation.SetBool("Walking", false);
         idletimer += Time.deltaTime;
 
@@ -80,5 +85,6 @@ public class Enemy : MonoBehaviour
         //Move in that direction
         enemy.position = new Vector3(enemy.position.x + Time.deltaTime * _direction * speed,
             enemy.position.y, enemy.position.z);
+        
     }
 }

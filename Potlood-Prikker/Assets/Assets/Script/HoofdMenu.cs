@@ -33,9 +33,4 @@ public class HoofdMenu : MonoBehaviour
     {
         Optiemenu.SetActive(false);
     }
-
-    public void Hoofdmenu()
-    {
-        SceneManager.LoadScene("Menu");
-    }
 }

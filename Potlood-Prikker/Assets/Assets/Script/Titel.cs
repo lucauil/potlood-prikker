@@ -19,12 +19,9 @@ public class Titel : MonoBehaviour
         float Enter = Input.GetAxis("Submit");
         if (Enter == 1 )
         {
-            SceneManager.LoadScene("HoofdMenu");
+            SceneManager.LoadScene("Kleur_Selectie");
         }
     }
-
-    
-        
     public void BlinkingText()
     {
         if (timer < 0.5f)

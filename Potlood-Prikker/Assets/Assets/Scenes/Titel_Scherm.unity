@@ -1225,7 +1225,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Druk op enter om door te gaan
+  m_text: Open de la
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 79783a2c96b4ac74d9b5f087751d0ff8, type: 2}
   m_sharedMaterial: {fileID: -6653352641802994653, guid: 79783a2c96b4ac74d9b5f087751d0ff8, type: 2}

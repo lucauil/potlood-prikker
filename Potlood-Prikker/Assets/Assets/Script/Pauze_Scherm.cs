@@ -7,7 +7,11 @@ public class NewBehaviourScript : MonoBehaviour
 {
     public void Terug()
     {
-        SceneManager.LoadScene("HoofdMenu");
+        SceneManager.LoadScene("Kleur_Selectie");
+    }
+    public void Doorgaan()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
     public void Quit()
     {
